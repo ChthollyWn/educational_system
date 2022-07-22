@@ -59,4 +59,11 @@ public class AcademyController {
         return a;
     }
 
+    @RequestMapping("/doUpdatetest")
+    @ResponseBody
+    public int doUpdatetest(Academy academy){
+        int a = academyMapper.updateById(academy);
+        return a;
+    }
+
 }
