@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap.min.css">
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap-icons.css">
+
+	<script src="..\js\vue.min.js"></script>
+	<script src="..\js\axios.min.js"></script>
+
+	<style type="text/css">
+		.content{
+			margin: 15px;
+		}
+		.tol{
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+
+
+<body>
+	<div class="content" id="app">
+		<div class="tol">
+			<a class="btn  btn-outline-info" href="add.html">新增</a>
+		</div>
+		<table class="table table-hover">
+		  <thead class="thead-dark">
+		    <tr>
+				<th>#</th>
+				<th>姓名</th>
+				<th>性别</th>
+				<th>电话</th>
+				<th>所属学院</th>
+				<th>所属班级</th>
+				<th>密码</th>
+				<th>操作</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr v-for="s in stulist" v-if="del_ids.indexOf(s.id) == -1">
+					<td>{{s.id}}</td>
+					<td>{{s.name}}</td>
+					<td>{{s.sex}}</td>
+					<td>{{s.phone}}</td>
+					<td>{{s.aid}}</td>
+					<td>{{s.cid}}</td>
+					<td>{{s.password}}</td>
+		      <td>
+					<a class="btn btn-danger btn-sm" v-on:click="doDelete(s.id)">删除</a>
+			      	<a class="btn btn-info btn-sm" v-bind:href="'update.html?id='+s.id">修改</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+			
+	</div>
+
+<script>
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			stulist:[],
+			del_ids:[]
+		},
+		mounted:function (){
+			axios.get("/student/list").then(resp => this.stulist = resp.data)
+		},
+		methods:{
+			doDelete:function (id){
+				axios.get("/student/doDelete?id="+id).then(res => {
+					if(res.data == 1){
+						alert("删除成功");
+						this.del_ids.push(id)
+					}
+				}).catch(error => alert("不允许删除"))
+			}
+		}
+
+	})
+</script>
+
+</body>
+
+</html>

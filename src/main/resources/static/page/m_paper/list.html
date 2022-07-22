@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap.min.css">
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap-icons.css">
+
+	<script src="..\js\vue.min.js"></script>
+	<script src="..\js\axios.min.js"></script>
+	<style type="text/css">
+		.content{
+			margin: 15px;
+		}
+		.tol{
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+
+
+<body>
+	<div class="content" id="app">
+		<div class="tol">
+			<a class="btn  btn-outline-info" href="add.html">新增</a>
+		</div>
+		<table class="table table-hover">
+		  <thead class="thead-dark">
+		    <tr>
+				<th>#</th>
+				<th>试卷名称</th>
+				<th>满分</th>
+				<th>题目数量</th>
+				<th>考试时间</th>
+				<th>考试时长</th>
+				<th>试卷状态</th>
+				<th>所属学院</th>
+				<th>完成时间</th>
+				<th>操作</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr v-for="p in paperlist" v-if="del_ids.indexOf(p.id) == -1">
+					<td>{{p.id}}</td>
+					<td>{{p.name}}</td>
+					<td>{{p.totalScore}}</td>
+					<td>{{p.questionNum}}</td>
+					<td>{{p.examTime}}</td>
+					<td>{{p.minutes}}</td>
+					<td>{{statusNote[p.status]}}</td>
+					<td>{{p.aid}}</td>
+					<td>{{p.creatertime}}</td>
+		      <td>
+					<a class="btn btn-danger btn-sm" v-on:click="doDelete(p.id)">删除</a>
+					<a class="btn btn-info btn-sm" v-bind:href="'update.html?id='+p.id">修改</a>
+					<a class="btn btn-success btn-sm" v-if="p.status == 0" v-on:click="linkQuestion(p.id)">关联题目</a>
+					<button class="btn btn-warning btn-sm" v-if="p.status==1" v-on:click="publish(p.id)">发布试卷</button>
+					<a class="btn btn-outline-primary btn-sm" v-if="p.status!=0" v-bind:href="'preview.html?id='+p.id">预览</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+			
+	</div>
+
+<script>
+
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			paperlist:[],
+			del_ids:[],
+			statusNote:["初始创建","已关联","已发布"]
+		},
+		mounted:function (){
+			axios.get("/paper/list").then( res => {
+				this.paperlist = res.data;
+				console.log(res.data)
+			})
+			//console.log(this.paperlist)
+		},
+
+		methods:{
+			doDelete:function (id){
+				axios.get("/paper/doDelete?id="+id).then(res => {
+					if(res.data == 1){
+						alert("删除成功");
+						this.del_ids.push(id)
+					}
+				}).catch(error => alert("不允许删除"))
+			},
+			linkQuestion:function (id){
+				axios.get("/paper/linkQuestion?id="+id).then(res => {
+					if(res.data > 0){
+						alert("生成完毕"+res.data);
+						location.href="list.html"
+					}else if(res.data == 0){
+						alert("题目数量不足，生成失败")
+					}
+				}).catch(error => alert("生成失败"))
+			},
+			publish:function (id){
+				axios.get("/paper/publish?id="+id).then(res => {
+					if(res.data == 1){
+						alert("发布成功");
+						location.reload();
+					}
+				}).catch(error => alert("发布失败"))
+			}
+		}
+	})
+
+</script>
+
+</body>
+
+</html>

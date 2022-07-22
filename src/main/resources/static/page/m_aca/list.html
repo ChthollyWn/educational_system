@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap.min.css">
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap-icons.css">
+	<script src="..\js\vue.min.js"></script>
+	<script src="..\js\axios.min.js"></script>
+	<style type="text/css">
+		.content{
+			margin: 15px;
+		}
+		.tol{
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+
+
+<body>
+	<div class="content" id="app">
+		<div class="tol">
+			<a class="btn  btn-outline-info" href="add.html">新增</a>
+		</div>
+		<table class="table table-hover">
+		  <thead class="thead-dark">
+		    <tr>
+		      <th>#</th>
+		      <th>学院名称</th>
+		      <th>操作</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr v-for="a in acalist" v-if="del_ids.indexOf(a.id)==-1">
+		      <td>{{a.id}}</td>
+		      <td>{{a.name}}</td>
+		      <td>
+					<a class="btn btn-danger btn-sm" v-on:click="doDelete(a.id)">删除</a>
+			      	<a class="btn btn-info btn-sm" v-bind:href="'updata.html?id='+a.id">修改</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+	</div>
+
+<script>
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			acalist:[{id:1,name:"甲骨文软件学院"},
+				{id:2,name:"计算机学院"},
+				{id:3,name:"信息工程学院"}],
+			del_ids:[]
+		},
+		mounted:function (){
+			axios.get("/aca/list").then(res => this.acalist = res.data)
+		},
+		methods:{
+			doDelete:function (id){
+				axios.get("/aca/delete?id="+id).then(res => {
+					if(res.data == '1'){
+						alert("删除完毕："+res.data)
+						this.del_ids.push(id)
+					}
+				}).catch(error => alert("不允许删除"))
+			}
+		}
+
+	})
+</script>
+
+</body>
+
+</html>

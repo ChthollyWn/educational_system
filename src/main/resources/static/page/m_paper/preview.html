@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>在线考试系统</title>
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap.min.css">
+
+	<script src="..\js\vue.min.js"></script>
+	<script src="..\js\axios.min.js"></script>
+
+	<style>
+		.tl{
+			line-height: 28px;
+			font-size: 18px;
+		}
+		.chs label{
+			display: block;
+			cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin: 10px 26px;
+            border-radius: 3px;
+		}
+		.item{
+			padding-bottom: 18px;
+		    margin-top: 15px;
+		    border-bottom: 1px solid #ddd;
+		}
+		.main{
+			margin-left: 30px;
+		    border-right: 1px solid #ddd;
+		    border-left: 1px solid #ddd;
+		    width: 60%;
+		    padding: 15px;
+		    min-width: 800px;
+		}
+		.etitle{
+			font-size: 25px;
+    		margin-bottom: 10px;
+		}
+		.ans{
+			position: fixed;
+			background: #fff;
+		    right: 50px;
+		    width: 400px;
+		    top: 10px;
+		    border: 1px solid #ddd;
+		}
+		.djs{
+			text-align: center;
+		    font-size: 22px;
+		    background: #ddd;
+		    color: red;
+		    font-weight: bold;
+		    line-height: 43px;
+		}
+		.dtk{
+		    text-align: center;
+		    background: #639dd4;
+		    color: #fff;
+		    font-size: 18px;
+		    line-height: 45px;
+		}
+		.ans a{
+			display: inline-block;
+			color: #000;
+		    width: 40px;
+		    height: 40px;
+		    border: 1px solid #ddd;
+		    text-align: center;
+		    line-height: 38px;
+		    border-radius: 2px;
+		    margin: 5px;
+		}
+		.ans a:hover{
+			color: #000;
+			text-decoration: none;
+		}
+	</style>	
+</head>
+<body>
+	<div class="main" id="app">
+		<div>
+			<div class="etitle">{{paper.name}}</div>
+			<div>总分{{paper.totalScore}}分，共{{paper.questionNum}}题</div>
+		</div>
+
+		<div class="item" v-for="(q,index) in qs">
+		  <div class="tl" >
+		    {{index+1}}{{q.content}}
+		  </div>
+		  <div class="chs">
+				<label>
+					<input type="radio" v-bind:name="'q'+(index+1)" value="A"> {{q.chooseA}}
+				</label>
+			  <label>
+				  <input type="radio" v-bind:name="'q'+(index+1)" value="B"> {{q.chooseA}}
+			  </label>
+			  <label>
+				  <input type="radio" v-bind:name="'q'+(index+1)" value="C"> {{q.chooseA}}
+			  </label>
+			  <label>
+				  <input type="radio" v-bind:name="'q'+(index+1)" value="D"> {{q.chooseA}}
+			  </label>
+		  </div>
+		</div>
+<script>
+
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			paper:{},
+			qs:[]
+		},
+		mounted:function (){
+			var id = location.href.split("=")[1];
+			axios.get("/paper/getone?id="+id).then(res => {
+				this.paper = res.data
+			});
+			axios.get("/question/getQuestions?paperid="+id).then(res => {
+				this.qs = res.data;
+			})
+		}
+	})
+
+</script>
+	
+</body>
+</html>

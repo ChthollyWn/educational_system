@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap.min.css">
+	<link rel="stylesheet" href="..\bootstrap-4.6.0-dist\css\bootstrap-icons.css">
+
+	<script src="..\js\vue.min.js"></script>
+	<script src="..\js\axios.min.js"></script>
+	<style type="text/css">
+		.content{
+			margin: 15px;
+		}
+		.tol{
+			margin-bottom: 15px;
+		}
+	</style>
+</head>
+
+
+<body>
+	<div class="content" id="app">
+		<div class="tol">
+			<a class="btn  btn-outline-info" href="add.html">新增</a>
+		</div>
+		<table class="table table-hover">
+		  <thead class="thead-dark">
+		    <tr>
+				<th>#</th>
+				<th>题目</th>
+				<th>选项A</th>
+				<th>选项B</th>
+				<th>选项C</th>
+				<th>选项D</th>
+				<th>答案</th>
+				<th>所属学院</th>
+				<th>操作</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr v-for="p in questionlist" v-if="del_ids.indexOf(p.id) == -1">
+					<td>{{p.id}}</td>
+					<td>{{p.content}}</td>
+					<td>{{p.chooseA}}</td>
+					<td>{{p.chooseB}}</td>
+					<td>{{p.chooseC}}</td>
+					<td>{{p.chooseD}}</td>
+					<td>{{p.answer}}</td>
+					<td>{{p.aid}}</td>
+
+		      <td>
+					<a class="btn btn-danger btn-sm" v-on:click="doDelete(p.id)">删除</a>
+			      	<a class="btn btn-info btn-sm" v-bind:href="'update.html?id='+p.id">修改</a>
+		      </td>
+		    </tr>
+		  </tbody>
+		</table>
+			
+	</div>
+
+<script>
+
+	var vm = new Vue({
+		el:"#app",
+		data:{
+			questionlist:[],
+			del_ids:[]
+		},
+		mounted:function (){
+			axios.get("/question/list").then( res => this.questionlist = res.data)
+		},
+		methods:{
+			doDelete:function (id){
+				axios.get("/question/doDelete?id="+id).then(res => {
+					if(res.data == 1){
+						alert("删除成功");
+						this.del_ids.push(id)
+					}
+				}).catch(error => alert("不允许删除"))
+			}
+		}
+
+	})
+
+</script>
+
+</body>
+
+</html>
